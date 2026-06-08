@@ -1,0 +1,320 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EABD3026A7E60BBC4A4D9E70 /* CustomerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 633617B97D474DAD2227A2C6 /* CustomerViews.swift */; };
+		767586E27F1FEFC995A8AA74 /* MarketComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64B3A24B5B86F81227779A80 /* MarketComponents.swift */; };
+		8A6BB77833AE105875DF7C2F /* MarketIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FAF5B36E363D074487A3FD3 /* MarketIcons.swift */; };
+		D6CA8AB09ED742FE59943914 /* MarketModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B5F297A3A72A86C08A9256 /* MarketModels.swift */; };
+		E97060531DB6228775F6C0A3 /* MarketStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D255D0800444371B322C113D /* MarketStore.swift */; };
+		447420EA014000C4FA448683 /* MarketTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440D816A2EF02A5DE1B57660 /* MarketTheme.swift */; };
+		43111D1966A287A4BD7B64FD /* NightMarketLoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648FB140CAB768D83CEF40A3 /* NightMarketLoadingScreen.swift */; };
+		2E700BB0726AD1AB4B20458B /* NightMarketWebPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701A91AF27B1851640A2F3A1 /* NightMarketWebPanel.swift */; };
+		C61C6FD0C957B5EE68A857A3 /* NightRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3502477ABE59FA8A760173DF /* NightRootView.swift */; };
+		92024DA4DBBD4DEB7B53699F /* NightSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC066B1AD4DE697CBF64D8B8 /* NightSettingsView.swift */; };
+		E662CE05631DDEB6974638B8 /* MidnightMiniApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC884D1362475B3B2ACDC5A4 /* MidnightMiniApp.swift */; };
+		C9CAC16396FAA8E94BC76BF2 /* ShelfViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9CD518BCCB26406CD240A8 /* ShelfViews.swift */; };
+		D26058936EAA41FF45D07E8D /* ShiftScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059D11D16F805CE3387FA828 /* ShiftScreen.swift */; };
+		A1B9A9497CBBAA507A706501 /* StatsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87EA1B525B3932A6BC17C6E1 /* StatsScreen.swift */; };
+		4DE69DC1E678AFBEF3300BB7 /* UpgradeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E796EBDA0319538DA1F26F8C /* UpgradeScreen.swift */; };
+		04A7814E4EEC70DE7D6C41B1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32BB636196F91ED59D7A4919 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E2FA921BD2FAF219183B9632 /* Midnight Mini.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Midnight Mini.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		633617B97D474DAD2227A2C6 /* CustomerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomerViews.swift"; sourceTree = "<group>"; };
+		64B3A24B5B86F81227779A80 /* MarketComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MarketComponents.swift"; sourceTree = "<group>"; };
+		8FAF5B36E363D074487A3FD3 /* MarketIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MarketIcons.swift"; sourceTree = "<group>"; };
+		96B5F297A3A72A86C08A9256 /* MarketModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MarketModels.swift"; sourceTree = "<group>"; };
+		D255D0800444371B322C113D /* MarketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MarketStore.swift"; sourceTree = "<group>"; };
+		440D816A2EF02A5DE1B57660 /* MarketTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MarketTheme.swift"; sourceTree = "<group>"; };
+		648FB140CAB768D83CEF40A3 /* NightMarketLoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NightMarketLoadingScreen.swift"; sourceTree = "<group>"; };
+		701A91AF27B1851640A2F3A1 /* NightMarketWebPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NightMarketWebPanel.swift"; sourceTree = "<group>"; };
+		3502477ABE59FA8A760173DF /* NightRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NightRootView.swift"; sourceTree = "<group>"; };
+		EC066B1AD4DE697CBF64D8B8 /* NightSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NightSettingsView.swift"; sourceTree = "<group>"; };
+		FC884D1362475B3B2ACDC5A4 /* MidnightMiniApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MidnightMiniApp.swift"; sourceTree = "<group>"; };
+		EB9CD518BCCB26406CD240A8 /* ShelfViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShelfViews.swift"; sourceTree = "<group>"; };
+		059D11D16F805CE3387FA828 /* ShiftScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShiftScreen.swift"; sourceTree = "<group>"; };
+		87EA1B525B3932A6BC17C6E1 /* StatsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatsScreen.swift"; sourceTree = "<group>"; };
+		E796EBDA0319538DA1F26F8C /* UpgradeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UpgradeScreen.swift"; sourceTree = "<group>"; };
+		32BB636196F91ED59D7A4919 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BB5944C6515D6D2B678426AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		29B2D46AA747A59804D46E1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5928955287B8089ED2177128 = {
+			isa = PBXGroup;
+			children = (
+				D685C104AFFBCF83C7CB0FB6 /* Sources */,
+				BF7A2D27A78D590BDEF15AF2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D685C104AFFBCF83C7CB0FB6 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				633617B97D474DAD2227A2C6 /* CustomerViews.swift */,
+				64B3A24B5B86F81227779A80 /* MarketComponents.swift */,
+				8FAF5B36E363D074487A3FD3 /* MarketIcons.swift */,
+				96B5F297A3A72A86C08A9256 /* MarketModels.swift */,
+				D255D0800444371B322C113D /* MarketStore.swift */,
+				440D816A2EF02A5DE1B57660 /* MarketTheme.swift */,
+				648FB140CAB768D83CEF40A3 /* NightMarketLoadingScreen.swift */,
+				701A91AF27B1851640A2F3A1 /* NightMarketWebPanel.swift */,
+				3502477ABE59FA8A760173DF /* NightRootView.swift */,
+				EC066B1AD4DE697CBF64D8B8 /* NightSettingsView.swift */,
+				FC884D1362475B3B2ACDC5A4 /* MidnightMiniApp.swift */,
+				EB9CD518BCCB26406CD240A8 /* ShelfViews.swift */,
+				059D11D16F805CE3387FA828 /* ShiftScreen.swift */,
+				87EA1B525B3932A6BC17C6E1 /* StatsScreen.swift */,
+				E796EBDA0319538DA1F26F8C /* UpgradeScreen.swift */,
+				32BB636196F91ED59D7A4919 /* Assets.xcassets */,
+				BB5944C6515D6D2B678426AB /* Info.plist */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		BF7A2D27A78D590BDEF15AF2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA921BD2FAF219183B9632 /* Midnight Mini.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6772EC0E5D0CA05E04DDDB49 /* Midnight Mini */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 92CF0BDA3A7742D5453609D3 /* Build configuration list for PBXNativeTarget "Midnight Mini" */;
+			buildPhases = (
+				E7209FB05162B7572F88D05E /* Sources */,
+				29B2D46AA747A59804D46E1F /* Frameworks */,
+				66F8606E9F0A136E2228EBCB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Midnight Mini";
+			productName = "Midnight Mini";
+			productReference = E2FA921BD2FAF219183B9632 /* Midnight Mini.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		33EF45D2918B2C5BBEF21D74 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					6772EC0E5D0CA05E04DDDB49 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = D8A288FA6AAB62309EC7880E /* Build configuration list for PBXProject "Midnight Mini" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5928955287B8089ED2177128;
+			productRefGroup = BF7A2D27A78D590BDEF15AF2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6772EC0E5D0CA05E04DDDB49 /* Midnight Mini */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		66F8606E9F0A136E2228EBCB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04A7814E4EEC70DE7D6C41B1 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E7209FB05162B7572F88D05E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EABD3026A7E60BBC4A4D9E70 /* CustomerViews.swift in Sources */,
+				767586E27F1FEFC995A8AA74 /* MarketComponents.swift in Sources */,
+				8A6BB77833AE105875DF7C2F /* MarketIcons.swift in Sources */,
+				D6CA8AB09ED742FE59943914 /* MarketModels.swift in Sources */,
+				E97060531DB6228775F6C0A3 /* MarketStore.swift in Sources */,
+				447420EA014000C4FA448683 /* MarketTheme.swift in Sources */,
+				43111D1966A287A4BD7B64FD /* NightMarketLoadingScreen.swift in Sources */,
+				2E700BB0726AD1AB4B20458B /* NightMarketWebPanel.swift in Sources */,
+				C61C6FD0C957B5EE68A857A3 /* NightRootView.swift in Sources */,
+				92024DA4DBBD4DEB7B53699F /* NightSettingsView.swift in Sources */,
+				E662CE05631DDEB6974638B8 /* MidnightMiniApp.swift in Sources */,
+				C9CAC16396FAA8E94BC76BF2 /* ShelfViews.swift in Sources */,
+				D26058936EAA41FF45D07E8D /* ShiftScreen.swift in Sources */,
+				A1B9A9497CBBAA507A706501 /* StatsScreen.swift in Sources */,
+				4DE69DC1E678AFBEF3300BB7 /* UpgradeScreen.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		71307F56FE0F050CBFE8BD6D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D4147F9DEB4AD84BF3A14790 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		683105B965893FCC643C4ECF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				CURRENT_PROJECT_VERSION = 1;
+				MARKETING_VERSION = 1.0;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sources/Info.plist";
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.privetai.midnightmini;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = Debug;
+		};
+		4DC7B479A29173674AFD7BAC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				DEVELOPMENT_TEAM = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				CURRENT_PROJECT_VERSION = 1;
+				MARKETING_VERSION = 1.0;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sources/Info.plist";
+				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				PRODUCT_BUNDLE_IDENTIFIER = com.privetai.midnightmini;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D8A288FA6AAB62309EC7880E /* Build configuration list for PBXProject "Midnight Mini" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71307F56FE0F050CBFE8BD6D /* Debug */,
+				D4147F9DEB4AD84BF3A14790 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		92CF0BDA3A7742D5453609D3 /* Build configuration list for PBXNativeTarget "Midnight Mini" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				683105B965893FCC643C4ECF /* Debug */,
+				4DC7B479A29173674AFD7BAC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 33EF45D2918B2C5BBEF21D74 /* Project object */;
+}
