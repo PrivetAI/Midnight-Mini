@@ -60,12 +60,12 @@
 		5928955287B8089ED2177128 = {
 			isa = PBXGroup;
 			children = (
-				D685C104AFFBCF83C7CB0FB6 /* Sources */,
+				D685C104AFFBCF83C7CB0FB6 /* Midnight Mini */,
 				BF7A2D27A78D590BDEF15AF2 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		D685C104AFFBCF83C7CB0FB6 /* Sources */ = {
+		D685C104AFFBCF83C7CB0FB6 /* Midnight Mini */ = {
 			isa = PBXGroup;
 			children = (
 				633617B97D474DAD2227A2C6 /* CustomerViews.swift */,
@@ -86,7 +86,7 @@
 				32BB636196F91ED59D7A4919 /* Assets.xcassets */,
 				BB5944C6515D6D2B678426AB /* Info.plist */,
 			);
-			path = Sources;
+			path = "Midnight Mini";
 			sourceTree = "<group>";
 		};
 		BF7A2D27A78D590BDEF15AF2 /* Products */ = {
@@ -249,7 +249,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				MARKETING_VERSION = 1.0;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Sources/Info.plist";
+				INFOPLIST_FILE = "Midnight Mini/Info.plist";
 				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.privetai.midnightmini;
@@ -277,7 +277,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				MARKETING_VERSION = 1.0;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Sources/Info.plist";
+				INFOPLIST_FILE = "Midnight Mini/Info.plist";
 				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.privetai.midnightmini;
