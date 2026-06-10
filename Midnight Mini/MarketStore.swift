@@ -14,7 +14,7 @@ final class MarketStore: ObservableObject {
     @Published var money: Int = 120
     @Published var night: Int = 1
     @Published var upgradeLevels: [String: Int] = [:]      // UpgradeKind.rawValue -> level
-    @Published var unlockedLines: Set<Int> = [0, 1, 2, 3, 4]  // product line ids stocked in store
+    @Published var unlockedLines: Set<Int> = [0, 1, 2, 3]  // product line ids stocked in store
     @Published var bestNightEarnings: Int = 0
     @Published var lifetimeServed: Int = 0
     @Published var lifetimeEarned: Int = 0
@@ -332,8 +332,8 @@ final class MarketStore: ObservableObject {
     // Build an order: a few distinct stocked lines, quantities scaled by night & quirk,
     // total units capped so it stays fulfillable in time.
     private func makeOrder(stocked: [ProductLine], preferred: [Int]?, quirk: CustomerQuirk) -> [OrderLine] {
-        // How many distinct lines this order can have.
-        let maxLines = 1 + min(3, night / 4)        // n1-3:1, 4-7:2, 8-11:3, 12+:4
+        // How many distinct lines this order can have — grows gradually with the night.
+        let maxLines = 1 + min(3, (night - 1) / 3)  // n1-3:1, 4-6:2, 7-9:3, 10+:4
         var lineCount = Int.random(in: 1...max(1, maxLines))
         if quirk == .kid { lineCount = 1 }          // kids keep it simple
         if quirk == .hoarder { lineCount = min(maxLines, lineCount + 1) }
@@ -631,7 +631,7 @@ final class MarketStore: ObservableObject {
         money = 120
         night = 1
         upgradeLevels = [:]
-        unlockedLines = [0, 1, 2, 3, 4]
+        unlockedLines = [0, 1, 2, 3]
         bestNightEarnings = 0
         lifetimeServed = 0
         lifetimeEarned = 0
