@@ -12,7 +12,9 @@ struct ShiftScreen: View {
     @State private var counterFrame: CGRect = .zero
 
     var body: some View {
-        GeometryReader { _ in
+        GeometryReader { geo in
+            // Clamp + center content so it never stretches/crops on wide canvases (iPad).
+            let maxW = min(geo.size.width, UIScreen.main.bounds.width, 760)
             ZStack {
                 MarketTheme.night.ignoresSafeArea()
                 VStack(spacing: 12) {
@@ -42,8 +44,9 @@ struct ShiftScreen: View {
                             }
                         )
 
-                    // Shelves (drag sources / tap to restock). A HORIZONTAL strip so the
-                    // vertical drag-up to the counter never conflicts with scrolling.
+                    // Shelves (drag sources / tap to restock) — an adaptive grid of compact
+                    // blocks that always fits the area: more columns / smaller tiles as the
+                    // catalog grows, so nothing ever runs off the screen.
                     VStack(spacing: 8) {
                         HStack {
                             sectionLabel("Shelves — tap to restock, drag up to give",
@@ -55,21 +58,24 @@ struct ShiftScreen: View {
                         }
                         .padding(.horizontal, 16)
 
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 10) {
+                        GeometryReader { sg in
+                            let count = store.stockedLines.count
+                            let cols = shelfColumns(count: count, height: sg.size.height, width: sg.size.width)
+                            let rows = max(1, Int(ceil(Double(count) / Double(cols))))
+                            let tileH = min(88, max(56, (sg.size.height - CGFloat(rows - 1) * 8) / CGFloat(rows)))
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: cols),
+                                      spacing: 8) {
                                 ForEach(store.stockedLines) { line in
                                     ShelfTile(store: store, line: line,
                                               onDragChange: handleDragChange,
                                               onDragEnd: handleDragEnd)
-                                        .frame(width: 100)
+                                        .frame(height: tileH)
                                 }
                             }
                             .padding(.horizontal, 16)
-                            .padding(.vertical, 4)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                         }
                     }
-
-                    Spacer(minLength: 0)
 
                     Button(action: { store.pauseShift(); showAbandon = true }) {
                         Text("End Shift Early")
@@ -79,6 +85,8 @@ struct ShiftScreen: View {
                     .buttonStyle(.plain)
                     .padding(.bottom, 6)
                 }
+                .frame(maxWidth: maxW)
+                .frame(maxWidth: .infinity)
 
                 // Floating earnings overlay
                 floatingOverlay
@@ -161,6 +169,18 @@ struct ShiftScreen: View {
         }
         dragLineId = nil
         dragValid = false
+    }
+
+    // Pick a column count so every shelf fits in the available height without scrolling:
+    // add columns (shrinking tiles) as the catalog grows.
+    private func shelfColumns(count: Int, height: CGFloat, width: CGFloat) -> Int {
+        guard count > 0 else { return 1 }
+        let tileH: CGFloat = 72
+        let maxRows = max(1, Int((height + 8) / (tileH + 8)))
+        let minCols = width > 560 ? 5 : 4
+        let maxCols = width > 560 ? 8 : 6
+        let needed = Int(ceil(Double(count) / Double(maxRows)))
+        return min(maxCols, max(minCols, min(count, needed)))
     }
 
     // MARK: - Pieces
