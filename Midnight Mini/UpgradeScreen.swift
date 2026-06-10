@@ -19,6 +19,7 @@ struct StorefrontScreen: View {
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 18) {
                             startCard
+                            TonightPreview(store: store)
                             unlockSection
                             upgradeSection
                             Color.clear.frame(height: 20)

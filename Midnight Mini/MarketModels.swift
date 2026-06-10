@@ -26,7 +26,12 @@ enum Catalog {
         ProductLine(id: 6, name: "Ice Cream",  glyph: .iceCream,  color: MarketTheme.neonPink,   basePrice: 22, restockCost: 8,  unlockNight: 5),
         ProductLine(id: 7, name: "Batteries",  glyph: .batteries, color: MarketTheme.neonCyan,   basePrice: 25, restockCost: 9,  unlockNight: 6),
         ProductLine(id: 8, name: "Energy",     glyph: .energy,    color: MarketTheme.neonGreen,  basePrice: 30, restockCost: 11, unlockNight: 7),
-        ProductLine(id: 9, name: "Lotto",      glyph: .lottery,   color: MarketTheme.neonViolet, basePrice: 40, restockCost: 14, unlockNight: 8)
+        ProductLine(id: 9, name: "Lotto",      glyph: .lottery,   color: MarketTheme.neonViolet, basePrice: 40, restockCost: 14, unlockNight: 8),
+        ProductLine(id: 10, name: "Hot Dog",    glyph: .hotDog,    color: MarketTheme.neonAmber,  basePrice: 16, restockCost: 6,  unlockNight: 9),
+        ProductLine(id: 11, name: "Slushie",    glyph: .slushie,   color: MarketTheme.neonCyan,   basePrice: 14, restockCost: 5,  unlockNight: 10),
+        ProductLine(id: 12, name: "Flowers",    glyph: .flowers,   color: MarketTheme.neonPink,   basePrice: 28, restockCost: 10, unlockNight: 11),
+        ProductLine(id: 13, name: "Charger",    glyph: .charger,   color: MarketTheme.neonGreen,  basePrice: 35, restockCost: 13, unlockNight: 12),
+        ProductLine(id: 14, name: "Plushie",    glyph: .plushie,   color: MarketTheme.neonViolet, basePrice: 45, restockCost: 16, unlockNight: 14)
     ]
 
     static func line(_ id: Int) -> ProductLine {
@@ -37,32 +42,47 @@ enum Catalog {
 // MARK: - Customer quirks
 
 enum CustomerQuirk: String, CaseIterable {
-    case regular        // ordinary shopper
+    case ordinary       // ordinary shopper
     case impatient      // patience drains faster, but pays a small rush bonus
     case bigSpender     // buys more units, pays much more, tips well
     case browser        // takes a moment before deciding (delayed arrival of order)
     case nightOwl       // happy & generous, big tip if served fast
     case haggler        // pays slightly less than list
+    case tourist        // patient and generous, takes a beat to decide
+    case kid            // quick, small order, modest pay
+    case hoarder        // buys a big stack at once
+    case regular        // a named neighborhood regular (see Regular roster)
+    case shoplifter     // not a buyer — slips out with stock unless stopped
 
     var title: String {
         switch self {
-        case .regular:    return "Regular"
+        case .ordinary:   return "Regular"
         case .impatient:  return "Impatient"
         case .bigSpender: return "Big Spender"
         case .browser:    return "Browser"
         case .nightOwl:   return "Night Owl"
         case .haggler:    return "Haggler"
+        case .tourist:    return "Tourist"
+        case .kid:        return "Kid"
+        case .hoarder:    return "Hoarder"
+        case .regular:    return "Regular"
+        case .shoplifter: return "Shoplifter"
         }
     }
 
     var accent: Color {
         switch self {
-        case .regular:    return MarketTheme.textMid
+        case .ordinary:   return MarketTheme.textMid
         case .impatient:  return MarketTheme.danger
         case .bigSpender: return MarketTheme.neonAmber
         case .browser:    return MarketTheme.neonCyan
         case .nightOwl:   return MarketTheme.neonViolet
         case .haggler:    return MarketTheme.neonGreen
+        case .tourist:    return MarketTheme.neonCyan
+        case .kid:        return MarketTheme.neonGreen
+        case .hoarder:    return MarketTheme.neonAmber
+        case .regular:    return MarketTheme.neonPink
+        case .shoplifter: return MarketTheme.danger
         }
     }
 
@@ -72,6 +92,9 @@ enum CustomerQuirk: String, CaseIterable {
         case .impatient: return 0.6
         case .nightOwl:  return 1.2
         case .browser:   return 1.1
+        case .tourist:   return 1.3
+        case .kid:       return 0.8
+        case .regular:   return 1.15
         default:         return 1.0
         }
     }
@@ -82,6 +105,10 @@ enum CustomerQuirk: String, CaseIterable {
         case .bigSpender: return 1.6
         case .haggler:    return 0.85
         case .nightOwl:   return 1.15
+        case .tourist:    return 1.4
+        case .kid:        return 0.7
+        case .regular:    return 1.1
+        case .shoplifter: return 0.0
         default:          return 1.0
         }
     }
@@ -90,8 +117,14 @@ enum CustomerQuirk: String, CaseIterable {
     var quantityBonus: Int {
         switch self {
         case .bigSpender: return 2
+        case .hoarder:    return 3
         default:          return 0
         }
+    }
+
+    // Special customers are not ordinary buyers (resolved with bespoke logic).
+    var isSpecial: Bool {
+        self == .regular || self == .shoplifter
     }
 }
 
@@ -103,18 +136,26 @@ final class MarketCustomer: Identifiable, ObservableObject {
     let wantLineId: Int
     let quantity: Int
     let patienceMax: Double      // seconds of patience
+    let regularId: String?       // set when this customer is a named regular
     @Published var patience: Double
     @Published var ready: Bool   // browser becomes ready after a short delay
     var browseDelay: Double      // remaining delay before the order is revealed
 
-    init(quirk: CustomerQuirk, wantLineId: Int, quantity: Int, patienceMax: Double, browseDelay: Double) {
+    init(quirk: CustomerQuirk, wantLineId: Int, quantity: Int, patienceMax: Double, browseDelay: Double, regularId: String? = nil) {
         self.quirk = quirk
         self.wantLineId = wantLineId
         self.quantity = quantity
         self.patienceMax = patienceMax
+        self.regularId = regularId
         self.patience = patienceMax
         self.browseDelay = browseDelay
         self.ready = browseDelay <= 0
+    }
+
+    // The display name for the card (regular's name when applicable).
+    var displayName: String {
+        if let rid = regularId, let r = Regular.byId(rid) { return r.name }
+        return quirk.title
     }
 
     var patienceFraction: Double {
@@ -131,6 +172,9 @@ enum UpgradeKind: String, CaseIterable {
     case decor           // draws more customers (faster arrivals)
     case backroom        // larger restock batch per tap
     case clerk           // auto-serves the front customer periodically
+    case camera          // reduces shoplifting losses, adds catch chance
+    case loyalty         // bigger tips; regulars drop by more often
+    case marquee         // brighter sign: better night events & more regulars
 
     var title: String {
         switch self {
@@ -139,6 +183,9 @@ enum UpgradeKind: String, CaseIterable {
         case .decor:         return "Neon Decor"
         case .backroom:      return "Backroom Pallets"
         case .clerk:         return "Night Clerk"
+        case .camera:        return "Security Camera"
+        case .loyalty:       return "Loyalty Cards"
+        case .marquee:       return "Marquee Sign"
         }
     }
 
@@ -149,6 +196,9 @@ enum UpgradeKind: String, CaseIterable {
         case .decor:         return "Brighter signage pulls in customers sooner."
         case .backroom:      return "Restock more units with each tap."
         case .clerk:         return "A clerk auto-serves the front customer."
+        case .camera:        return "Catch shoplifters and lose less stock."
+        case .loyalty:       return "Better tips; regulars visit more often."
+        case .marquee:       return "Kinder nights and more familiar faces."
         }
     }
 
@@ -160,14 +210,20 @@ enum UpgradeKind: String, CaseIterable {
             case .decor:         StoreMarkIcon(size: 24, color: MarketTheme.neonPink)
             case .backroom:      CrateIcon(size: 24, color: MarketTheme.neonGreen)
             case .clerk:         PersonIcon(size: 24, color: MarketTheme.neonViolet)
+            case .camera:        CameraIcon(size: 24, color: MarketTheme.neonCyan)
+            case .loyalty:       LoyaltyIcon(size: 24, color: MarketTheme.neonPink)
+            case .marquee:       MarqueeIcon(size: 24, color: MarketTheme.neonAmber)
             }
         }
     }
 
     var maxLevel: Int {
         switch self {
-        case .clerk: return 5
-        default:     return 8
+        case .clerk:   return 5
+        case .camera:  return 5
+        case .loyalty: return 6
+        case .marquee: return 5
+        default:       return 8
         }
     }
 
@@ -179,6 +235,9 @@ enum UpgradeKind: String, CaseIterable {
         case .decor:         base = 80
         case .backroom:      base = 70
         case .clerk:         base = 180
+        case .camera:        base = 150
+        case .loyalty:       base = 120
+        case .marquee:       base = 200
         }
         return Int(base * pow(1.7, Double(level)))
     }

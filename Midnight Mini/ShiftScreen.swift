@@ -19,6 +19,11 @@ struct ShiftScreen: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
 
+                    // Tonight's event + contract.
+                    eventBar
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
+
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 16) {
                             // Customer queue
@@ -92,33 +97,72 @@ struct ShiftScreen: View {
         .padding(.vertical, 6)
     }
 
+    @ViewBuilder private var eventBar: some View {
+        VStack(spacing: 6) {
+            if let m = store.currentModifier {
+                HStack {
+                    ModifierBanner(modifier: m, dim: store.dimNow, rush: store.rushActive)
+                    Spacer()
+                }
+            }
+            if let c = store.currentContract {
+                ContractChip(contract: c, complete: store.contractComplete)
+            }
+        }
+    }
+
     private var serveSection: some View {
         VStack(spacing: 8) {
             if let front = store.frontReadyCustomer() {
-                let line = Catalog.line(front.wantLineId)
-                let available = store.shelves[front.wantLineId] ?? 0
-                let canServe = available > 0
-                Button(action: { store.serveFront() }) {
-                    HStack(spacing: 12) {
-                        ProductGlyphView(glyph: line.glyph, size: 30, color: line.color)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Serve \(front.quirk.title)")
-                                .font(.system(size: 16, weight: .heavy, design: .rounded))
-                                .foregroundColor(MarketTheme.nightDeep)
-                            Text("\(front.quantity)x \(line.name)  ·  on shelf: \(available)")
-                                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                .foregroundColor(MarketTheme.nightDeep.opacity(0.7))
+                if front.quirk == .shoplifter {
+                    // A shoplifter at the counter — tap to stop them.
+                    Button(action: { store.serveFront() }) {
+                        HStack(spacing: 12) {
+                            PersonIcon(size: 28, color: MarketTheme.textHi)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Stop Shoplifter!")
+                                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                                    .foregroundColor(MarketTheme.textHi)
+                                Text("Tap before they slip out with stock")
+                                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                    .foregroundColor(MarketTheme.textHi.opacity(0.8))
+                            }
+                            Spacer()
+                            CloseIcon(size: 22, color: MarketTheme.textHi)
                         }
-                        Spacer()
-                        CoinIcon(size: 22, color: MarketTheme.nightDeep)
+                        .padding(.horizontal, 16).padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .fill(MarketTheme.danger.opacity(0.85))
+                        )
                     }
-                    .padding(.horizontal, 16).padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(canServe ? MarketTheme.money : MarketTheme.danger.opacity(0.85))
-                    )
+                    .buttonStyle(.plain)
+                } else {
+                    let line = Catalog.line(front.wantLineId)
+                    let available = store.shelves[front.wantLineId] ?? 0
+                    let canServe = available > 0
+                    Button(action: { store.serveFront() }) {
+                        HStack(spacing: 12) {
+                            ProductGlyphView(glyph: line.glyph, size: 30, color: line.color)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Serve \(front.displayName)")
+                                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                                    .foregroundColor(MarketTheme.nightDeep)
+                                Text("\(front.quantity)x \(line.name)  ·  on shelf: \(available)")
+                                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                    .foregroundColor(MarketTheme.nightDeep.opacity(0.7))
+                            }
+                            Spacer()
+                            CoinIcon(size: 22, color: MarketTheme.nightDeep)
+                        }
+                        .padding(.horizontal, 16).padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .fill(canServe ? MarketTheme.money : MarketTheme.danger.opacity(0.85))
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             } else {
                 HStack {
                     Text(store.hasClerk ? "Clerk is watching the counter…" : "No one ready at the counter")

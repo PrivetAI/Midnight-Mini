@@ -33,9 +33,20 @@ struct StatsScreen: View {
                                          accent: MarketTheme.neonCyan,
                                          icon: AnyView(PersonIcon(size: 16, color: MarketTheme.neonCyan)))
                             }
-                            StatTile(label: "Lifetime Earned", value: marketMoney(store.lifetimeEarned),
-                                     accent: MarketTheme.neonGreen,
-                                     icon: AnyView(StatsIcon(size: 16, color: MarketTheme.neonGreen)))
+                            HStack(spacing: 12) {
+                                StatTile(label: "Lifetime Earned", value: marketMoney(store.lifetimeEarned),
+                                         accent: MarketTheme.neonGreen,
+                                         icon: AnyView(StatsIcon(size: 16, color: MarketTheme.neonGreen)))
+                                StatTile(label: "Reputation", value: "\(store.reputation)★",
+                                         accent: MarketTheme.neonAmber,
+                                         icon: AnyView(BadgeStar(size: 16, color: MarketTheme.neonAmber)))
+                            }
+
+                            // Reputation-driven roster of neighborhood regulars
+                            RegularsRoster(store: store)
+
+                            // Lifetime achievements
+                            AchievementsSection(store: store)
 
                             // Quirk legend
                             quirkLegend
@@ -74,7 +85,7 @@ struct StatsScreen: View {
             Text("NIGHT CUSTOMERS")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
                 .foregroundColor(MarketTheme.textLow)
-            ForEach(CustomerQuirk.allCases, id: \.self) { q in
+            ForEach(CustomerQuirk.allCases.filter { !$0.isSpecial }, id: \.self) { q in
                 HStack(spacing: 10) {
                     PersonIcon(size: 18, color: q.accent)
                     Text(q.title)
@@ -96,12 +107,17 @@ struct StatsScreen: View {
 
     private func quirkBlurb(_ q: CustomerQuirk) -> String {
         switch q {
-        case .regular:    return "Steady shopper, fair pay."
+        case .ordinary:   return "Steady shopper, fair pay."
         case .impatient:  return "Short fuse; rush bonus if quick."
         case .bigSpender: return "Buys more, pays generously."
         case .browser:    return "Decides after a moment."
         case .nightOwl:   return "Cheerful, tips big when fast."
         case .haggler:    return "Talks the price down a little."
+        case .tourist:    return "Patient and generous; takes a beat."
+        case .kid:        return "Quick, small order, modest pay."
+        case .hoarder:    return "Grabs a big stack at once."
+        case .regular:    return "A familiar neighborhood face."
+        case .shoplifter: return "Stop them before they slip out."
         }
     }
 }

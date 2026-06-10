@@ -6,23 +6,38 @@ struct CustomerCard: View {
     let isFront: Bool
     let line: ProductLine
 
+    var accentColor: Color {
+        if let rid = customer.regularId, let r = Regular.byId(rid) { return r.accent }
+        return customer.quirk.accent
+    }
+    var isShoplifter: Bool { customer.quirk == .shoplifter }
+    var isRegular: Bool { customer.regularId != nil }
+
     var body: some View {
         VStack(spacing: 8) {
-            // Avatar + quirk badge
-            ZStack(alignment: .topTrailing) {
-                ZStack {
-                    Circle()
-                        .fill(MarketTheme.nightDeep)
-                        .frame(width: 52, height: 52)
-                    Circle()
-                        .stroke(customer.quirk.accent.opacity(0.8), lineWidth: isFront ? 2.5 : 1.5)
-                        .frame(width: 52, height: 52)
-                    PersonIcon(size: 30, color: customer.quirk.accent)
+            // Avatar — regulars get a portrait, others a silhouette.
+            ZStack {
+                Circle()
+                    .fill(MarketTheme.nightDeep)
+                    .frame(width: 52, height: 52)
+                Circle()
+                    .stroke(accentColor.opacity(0.8), lineWidth: isFront ? 2.5 : 1.5)
+                    .frame(width: 52, height: 52)
+                if isRegular {
+                    RegularPortraitIcon(size: 34, color: accentColor)
+                } else {
+                    PersonIcon(size: 30, color: accentColor)
                 }
             }
 
-            // Order bubble
-            if customer.ready {
+            // Order bubble (shoplifters show a warning instead of an order)
+            if isShoplifter {
+                Text("!")
+                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                    .foregroundColor(MarketTheme.danger)
+                    .padding(.horizontal, 12).padding(.vertical, 4)
+                    .background(Capsule().fill(MarketTheme.danger.opacity(0.18)))
+            } else if customer.ready {
                 HStack(spacing: 4) {
                     ProductGlyphView(glyph: line.glyph, size: 20, color: line.color)
                     Text("x\(customer.quantity)")
@@ -39,9 +54,9 @@ struct CustomerCard: View {
                     .background(Capsule().fill(MarketTheme.panelHi))
             }
 
-            Text(customer.quirk.title)
+            Text(customer.displayName)
                 .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundColor(customer.quirk.accent)
+                .foregroundColor(accentColor)
                 .lineLimit(1)
 
             // Patience bar
@@ -63,7 +78,7 @@ struct CustomerCard: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(isFront ? customer.quirk.accent : MarketTheme.stroke.opacity(0.4),
+                .stroke(isFront ? accentColor : MarketTheme.stroke.opacity(0.4),
                         lineWidth: isFront ? 2 : 1)
         )
     }

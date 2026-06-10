@@ -131,12 +131,23 @@ struct TallyOverlay: View {
                     tallyRow("Earned", marketMoney(tally.earnings), MarketTheme.money)
                     tallyRow("Customers served", "\(tally.served)", MarketTheme.neonCyan)
                     tallyRow("Walked out", "\(tally.missed)", tally.missed > 0 ? MarketTheme.danger : MarketTheme.textMid)
+                    if let ct = tally.contractTitle {
+                        tallyRow(ct, tally.contractDone ? "+\(marketMoney(tally.contractReward))" : "Missed",
+                                 tally.contractDone ? MarketTheme.neonGreen : MarketTheme.textLow)
+                    }
+                    if tally.reputationGained > 0 {
+                        tallyRow("Reputation", "+\(tally.reputationGained)★", MarketTheme.neonAmber)
+                    }
                     Rectangle().fill(MarketTheme.stroke.opacity(0.4)).frame(height: 1)
                     tallyRow("Cash on hand", marketMoney(store.money), MarketTheme.neonAmber)
                 }
                 .padding(16)
                 .frame(maxWidth: .infinity)
                 .background(RoundedRectangle(cornerRadius: 16).fill(MarketTheme.nightDeep))
+
+                if let beat = store.pendingStoryBeat {
+                    StoryBeatCard(text: beat)
+                }
 
                 NeonButton(title: "Open Next Night", fill: MarketTheme.neonGreen) {
                     store.continueAfterTally()
