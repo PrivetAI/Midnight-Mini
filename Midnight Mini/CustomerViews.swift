@@ -4,7 +4,6 @@ import SwiftUI
 struct CustomerCard: View {
     @ObservedObject var customer: MarketCustomer
     let isFront: Bool
-    let line: ProductLine
 
     var accentColor: Color {
         if let rid = customer.regularId, let r = Regular.byId(rid) { return r.accent }
@@ -30,7 +29,7 @@ struct CustomerCard: View {
                 }
             }
 
-            // Order bubble (shoplifters show a warning instead of an order)
+            // Order preview (shoplifters show a warning instead of an order)
             if isShoplifter {
                 Text("!")
                     .font(.system(size: 16, weight: .heavy, design: .rounded))
@@ -38,14 +37,8 @@ struct CustomerCard: View {
                     .padding(.horizontal, 12).padding(.vertical, 4)
                     .background(Capsule().fill(MarketTheme.danger.opacity(0.18)))
             } else if customer.ready {
-                HStack(spacing: 4) {
-                    ProductGlyphView(glyph: line.glyph, size: 20, color: line.color)
-                    Text("x\(customer.quantity)")
-                        .font(.system(size: 13, weight: .heavy, design: .rounded))
-                        .foregroundColor(MarketTheme.textHi)
-                }
-                .padding(.horizontal, 8).padding(.vertical, 4)
-                .background(Capsule().fill(MarketTheme.panelHi))
+                OrderChips(order: customer.order, glyphSize: 16, compact: true)
+                    .frame(height: 24)
             } else {
                 Text("…")
                     .font(.system(size: 16, weight: .heavy, design: .rounded))
@@ -71,7 +64,7 @@ struct CustomerCard: View {
             }
         }
         .padding(10)
-        .frame(width: 92)
+        .frame(width: 108)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(isFront ? MarketTheme.panelHi : MarketTheme.panel)
@@ -103,8 +96,7 @@ struct CustomerQueueView: View {
                 } else {
                     ForEach(Array(store.queue.enumerated()), id: \.element.id) { idx, c in
                         CustomerCard(customer: c,
-                                     isFront: c.id == store.frontReadyCustomer()?.id,
-                                     line: Catalog.line(c.wantLineId))
+                                     isFront: c.id == store.frontReadyCustomer()?.id)
                     }
                 }
             }

@@ -14,7 +14,7 @@ final class MarketStore: ObservableObject {
     @Published var money: Int = 120
     @Published var night: Int = 1
     @Published var upgradeLevels: [String: Int] = [:]      // UpgradeKind.rawValue -> level
-    @Published var unlockedLines: Set<Int> = [0, 1, 2]     // product line ids stocked in store
+    @Published var unlockedLines: Set<Int> = [0, 1, 2, 3, 4]  // product line ids stocked in store
     @Published var bestNightEarnings: Int = 0
     @Published var lifetimeServed: Int = 0
     @Published var lifetimeEarned: Int = 0
@@ -144,8 +144,8 @@ final class MarketStore: ObservableObject {
     }
 
     func lineUnlockCost(_ line: ProductLine) -> Int {
-        // Cost scales with the line's value.
-        max(40, line.basePrice * 12)
+        // Cost scales with the line's value (kept affordable so the store fills out fast).
+        max(30, line.basePrice * 7)
     }
 
     func unlockLine(_ line: ProductLine) {
@@ -199,6 +199,18 @@ final class MarketStore: ObservableObject {
     private func stopTimer() {
         timer?.cancel()
         timer = nil
+    }
+
+    // Pause/resume the running shift (used while a confirmation prompt is open) so the
+    // clock isn't ticking and the view isn't re-rendering 30×/sec behind the prompt.
+    func pauseShift() {
+        guard phase == .shift else { return }
+        stopTimer()
+    }
+
+    func resumeShift() {
+        guard phase == .shift, timer == nil else { return }
+        startTimer()
     }
 
     private func update() {
@@ -273,7 +285,7 @@ final class MarketStore: ObservableObject {
             clerkAccumulator += tick
             if clerkAccumulator >= clerkInterval {
                 clerkAccumulator = 0
-                autoServeFront()
+                autoCompleteFront()
             }
         }
 
@@ -290,35 +302,69 @@ final class MarketStore: ObservableObject {
         guard !lines.isEmpty else { return }
         let basePatience = max(5.0, 11.0 - Double(night) * 0.4)
 
-        // Shoplifter (only on a Sticky Fingers night).
+        // Shoplifter (only on a Sticky Fingers night) — no order, resolved by tapping.
         if let m = currentModifier, m.spawnsShoplifters, Double.random(in: 0...1) < 0.18 {
             let patience = max(4.0, 8.0 - Double(night) * 0.2)
-            let target = lines.randomElement()!.id
-            queue.append(MarketCustomer(quirk: .shoplifter, wantLineId: target, quantity: 1,
+            queue.append(MarketCustomer(quirk: .shoplifter, order: [],
                                         patienceMax: patience, browseDelay: 0))
             return
         }
 
         // A familiar face?
         if let reg = dueRegular(), Double.random(in: 0...1) < regularSpawnChance {
-            let want = reg.wantLineIds.filter { unlockedLines.contains($0) }.randomElement() ?? lines.randomElement()!.id
-            let qty = min(1 + reg.quantityBonus, 5)
+            let pref = reg.wantLineIds.filter { unlockedLines.contains($0) }
+            let order = makeOrder(stocked: lines, preferred: pref, quirk: .regular)
             let patience = basePatience * CustomerQuirk.regular.patienceFactor
-            queue.append(MarketCustomer(quirk: .regular, wantLineId: want, quantity: qty,
+            queue.append(MarketCustomer(quirk: .regular, order: order,
                                         patienceMax: patience, browseDelay: 0, regularId: reg.id))
             return
         }
 
         // Ordinary night customer.
         let quirk = pickQuirk()
-        let line = lines.randomElement()!
-        var qty = 1 + quirk.quantityBonus
-        if quirk != .kid && Double.random(in: 0...1) < 0.25 { qty += 1 }
-        qty = min(qty, 5)
+        let order = makeOrder(stocked: lines, preferred: nil, quirk: quirk)
         let patience = basePatience * quirk.patienceFactor
         let browse = quirk == .browser ? Double.random(in: 1.5...3.0) : 0
-        queue.append(MarketCustomer(quirk: quirk, wantLineId: line.id, quantity: qty,
+        queue.append(MarketCustomer(quirk: quirk, order: order,
                                     patienceMax: patience, browseDelay: browse))
+    }
+
+    // Build an order: a few distinct stocked lines, quantities scaled by night & quirk,
+    // total units capped so it stays fulfillable in time.
+    private func makeOrder(stocked: [ProductLine], preferred: [Int]?, quirk: CustomerQuirk) -> [OrderLine] {
+        // How many distinct lines this order can have.
+        let maxLines = 1 + min(3, night / 4)        // n1-3:1, 4-7:2, 8-11:3, 12+:4
+        var lineCount = Int.random(in: 1...max(1, maxLines))
+        if quirk == .kid { lineCount = 1 }          // kids keep it simple
+        if quirk == .hoarder { lineCount = min(maxLines, lineCount + 1) }
+        lineCount = min(lineCount, stocked.count)
+
+        // Pick distinct line ids, favoring the regular's preferred lines first.
+        var pool = stocked.map { $0.id }.shuffled()
+        if let pref = preferred, !pref.isEmpty {
+            pool = (pref.shuffled() + pool.filter { !pref.contains($0) })
+        }
+        let chosen = Array(pool.prefix(lineCount))
+
+        var order: [OrderLine] = []
+        var units = 0
+        let unitCap = 5
+        for (i, lid) in chosen.enumerated() {
+            var qty = 1
+            if Double.random(in: 0...1) < 0.30 { qty += 1 }
+            if quirk == .hoarder { qty += 1 }
+            if quirk == .bigSpender && i == 0 { qty += 1 }
+            if quirk == .kid { qty = 1 }
+            qty = min(qty, max(1, unitCap - units))
+            if qty <= 0 { break }
+            order.append(OrderLine(lineId: lid, qty: qty))
+            units += qty
+            if units >= unitCap { break }
+        }
+        if order.isEmpty, let lid = chosen.first ?? stocked.first?.id {
+            order = [OrderLine(lineId: lid, qty: 1)]
+        }
+        return order
     }
 
     private func pickQuirk() -> CustomerQuirk {
@@ -368,55 +414,73 @@ final class MarketStore: ObservableObject {
         addFloating(text: "+\(units)", color: line.color, atFront: false)
     }
 
-    // Serve the front (first ready) customer manually.
-    func serveFront() {
-        guard phase == .shift else { return }
-        guard let c = frontReadyCustomer() else { return }
-        attemptServe(c, isAuto: false)
-    }
-
-    private func autoServeFront() {
-        guard let c = frontReadyCustomer() else { return }
-        attemptServe(c, isAuto: true)
-    }
-
     func frontReadyCustomer() -> MarketCustomer? {
         queue.first(where: { $0.ready })
     }
 
-    private func attemptServe(_ c: MarketCustomer, isAuto: Bool) {
-        // Serving a shoplifter means stopping them.
+    // Drop one unit of a product onto the front customer's order (drag-to-fill).
+    func dropProduct(_ lineId: Int) {
+        guard phase == .shift, let c = frontReadyCustomer() else { return }
+        guard c.quirk != .shoplifter else { return }  // shoplifters are tapped, not filled
+        guard c.remaining(lineId) > 0 else {
+            addFloating(text: "Not needed", color: MarketTheme.danger, atFront: true)
+            return
+        }
+        let available = shelves[lineId] ?? 0
+        guard available > 0 else {
+            addFloating(text: "Empty shelf", color: MarketTheme.danger, atFront: true)
+            return
+        }
+        shelves[lineId] = available - 1
+        c.fill(lineId)
+        addFloating(text: "+1", color: Catalog.line(lineId).color, atFront: true)
+        if c.isComplete { completeOrder(c) }
+    }
+
+    // Tap path for a shoplifter standing at the counter.
+    func stopFrontShoplifter() {
+        guard phase == .shift, let c = frontReadyCustomer(), c.quirk == .shoplifter else { return }
+        catchShoplifter(c, viaCamera: false)
+        updateContractProgress()
+    }
+
+    // Clerk auto-fills the front customer's order as far as stock allows.
+    private func autoCompleteFront() {
+        guard let c = frontReadyCustomer() else { return }
         if c.quirk == .shoplifter {
-            catchShoplifter(c, viaCamera: false)
+            catchShoplifter(c, viaCamera: true)
             updateContractProgress()
             return
         }
-
-        let line = Catalog.line(c.wantLineId)
-        let available = shelves[c.wantLineId] ?? 0
-        guard available > 0 else {
-            if !isAuto {
-                addFloating(text: "Empty shelf", color: MarketTheme.danger, atFront: true)
+        for ol in c.order where !ol.isDone {
+            while c.remaining(ol.lineId) > 0 && (shelves[ol.lineId] ?? 0) > 0 {
+                shelves[ol.lineId]! -= 1
+                c.fill(ol.lineId)
             }
-            return
         }
-        let sold = min(c.quantity, available)
-        shelves[c.wantLineId] = available - sold
+        if c.isComplete { completeOrder(c) }
+    }
 
+    // Pay out a finished order and clear the customer.
+    private func completeOrder(_ c: MarketCustomer) {
         // Per-customer pay factor; regulars carry their own plus a small loyalty bump.
         var custPayFactor = c.quirk.payFactor
         if let rid = c.regularId, let reg = Regular.byId(rid) {
             let loyalty = min(regularLoyalty[rid] ?? 0, Regular.maxLoyalty)
             custPayFactor = reg.payFactor + Double(loyalty) * 0.03
         }
-
         let modPay = currentModifier?.payFactor ?? 1.0
         let tipBonus = currentModifier?.tipBonus ?? 0.0
-        let base = Double(sold * line.basePrice)
-        let pay = base * custPayFactor
         let promptness = c.patienceFraction
-        let tip = base * (0.35 + tipBonus) * promptness * serveTipFactor
-        var total = Int(((pay + tip) * modPay).rounded())
+
+        var total = 0
+        for ol in c.order {
+            let line = Catalog.line(ol.lineId)
+            let base = Double(ol.qty * line.basePrice)
+            let pay = base * custPayFactor
+            let tip = base * (0.35 + tipBonus) * promptness * serveTipFactor
+            total += Int(((pay + tip) * modPay).rounded())
+        }
         // Impatient customers leave a small rush bonus when served quickly.
         if c.quirk == .impatient && promptness > 0.5 { total += 4 }
 
@@ -567,7 +631,7 @@ final class MarketStore: ObservableObject {
         money = 120
         night = 1
         upgradeLevels = [:]
-        unlockedLines = [0, 1, 2]
+        unlockedLines = [0, 1, 2, 3, 4]
         bestNightEarnings = 0
         lifetimeServed = 0
         lifetimeEarned = 0

@@ -206,6 +206,7 @@ struct CloseIcon: View {
 enum ProductGlyph {
     case bottle, snack, coffee, magazine, sandwich, candy, iceCream, lottery, batteries, energy
     case hotDog, slushie, flowers, charger, plushie
+    case water, donut, gum, newspaper, umbrella
 
     func draw(in ctx: inout GraphicsContext, size sz: CGSize, color: Color) {
         let w = sz.width, h = sz.height
@@ -391,6 +392,63 @@ enum ProductGlyph {
             ctx.fill(Path(ellipseIn: CGRect(x: w*0.54, y: h*0.44, width: w*0.06, height: h*0.06)), with: .color(MarketTheme.nightDeep))
             // belly
             ctx.fill(Path(ellipseIn: CGRect(x: w*0.40, y: h*0.62, width: w*0.20, height: h*0.18)), with: .color(MarketTheme.textHi.opacity(0.5)))
+        case .water:
+            // clear bottle with a cap
+            var p = Path()
+            p.move(to: CGPoint(x: w*0.44, y: h*0.16))
+            p.addLine(to: CGPoint(x: w*0.56, y: h*0.16))
+            p.addLine(to: CGPoint(x: w*0.56, y: h*0.28))
+            p.addLine(to: CGPoint(x: w*0.62, y: h*0.38))
+            p.addLine(to: CGPoint(x: w*0.62, y: h*0.86))
+            p.addLine(to: CGPoint(x: w*0.38, y: h*0.86))
+            p.addLine(to: CGPoint(x: w*0.38, y: h*0.38))
+            p.addLine(to: CGPoint(x: w*0.44, y: h*0.28))
+            p.closeSubpath()
+            ctx.fill(p, with: .color(color.opacity(0.55)))
+            ctx.fill(Path(CGRect(x: w*0.44, y: h*0.10, width: w*0.12, height: h*0.08)), with: .color(color))
+            // water line
+            ctx.fill(Path(CGRect(x: w*0.38, y: h*0.54, width: w*0.24, height: h*0.32)), with: .color(color.opacity(0.4)))
+        case .donut:
+            ctx.fill(Path(ellipseIn: CGRect(x: w*0.20, y: h*0.24, width: w*0.60, height: h*0.52)), with: .color(color))
+            ctx.fill(Path(ellipseIn: CGRect(x: w*0.40, y: h*0.42, width: w*0.20, height: h*0.18)), with: .color(MarketTheme.nightDeep))
+            // sprinkles
+            var s = Path()
+            s.move(to: CGPoint(x: w*0.34, y: h*0.34)); s.addLine(to: CGPoint(x: w*0.40, y: h*0.32))
+            s.move(to: CGPoint(x: w*0.62, y: h*0.36)); s.addLine(to: CGPoint(x: w*0.66, y: h*0.42))
+            s.move(to: CGPoint(x: w*0.32, y: h*0.56)); s.addLine(to: CGPoint(x: w*0.36, y: h*0.62))
+            ctx.stroke(s, with: .color(MarketTheme.textHi.opacity(0.7)), style: StrokeStyle(lineWidth: max(1, w*0.04), lineCap: .round))
+        case .gum:
+            // a small pack of gum
+            let r = Path(roundedRect: CGRect(x: w*0.30, y: h*0.24, width: w*0.40, height: h*0.52), cornerRadius: w*0.05)
+            ctx.fill(r, with: .color(color))
+            ctx.fill(Path(CGRect(x: w*0.30, y: h*0.36, width: w*0.40, height: h*0.05)), with: .color(MarketTheme.nightDeep.opacity(0.5)))
+            ctx.fill(Path(roundedRect: CGRect(x: w*0.38, y: h*0.46, width: w*0.24, height: h*0.20), cornerRadius: w*0.03), with: .color(MarketTheme.textHi.opacity(0.6)))
+        case .newspaper:
+            let r = Path(roundedRect: CGRect(x: w*0.20, y: h*0.24, width: w*0.60, height: h*0.52), cornerRadius: w*0.03)
+            ctx.fill(r, with: .color(color.opacity(0.85)))
+            // headline + columns
+            ctx.fill(Path(CGRect(x: w*0.28, y: h*0.32, width: w*0.44, height: h*0.07)), with: .color(MarketTheme.nightDeep.opacity(0.55)))
+            var lines = Path()
+            for i in 0..<3 {
+                let y = h*0.48 + CGFloat(i)*h*0.09
+                lines.move(to: CGPoint(x: w*0.28, y: y)); lines.addLine(to: CGPoint(x: w*0.48, y: y))
+                lines.move(to: CGPoint(x: w*0.52, y: y)); lines.addLine(to: CGPoint(x: w*0.72, y: y))
+            }
+            ctx.stroke(lines, with: .color(MarketTheme.nightDeep.opacity(0.45)), lineWidth: max(1, w*0.03))
+        case .umbrella:
+            // canopy
+            var dome = Path()
+            dome.addArc(center: CGPoint(x: w*0.5, y: h*0.46), radius: w*0.30, startAngle: .degrees(180), endAngle: .degrees(360), clockwise: false)
+            dome.closeSubpath()
+            ctx.fill(dome, with: .color(color))
+            // scallops hint
+            ctx.fill(Path(ellipseIn: CGRect(x: w*0.46, y: h*0.42, width: w*0.08, height: h*0.08)), with: .color(MarketTheme.nightDeep.opacity(0.4)))
+            // handle
+            var h2 = Path()
+            h2.move(to: CGPoint(x: w*0.5, y: h*0.46))
+            h2.addLine(to: CGPoint(x: w*0.5, y: h*0.78))
+            h2.addArc(center: CGPoint(x: w*0.42, y: h*0.78), radius: w*0.08, startAngle: .degrees(0), endAngle: .degrees(180), clockwise: false)
+            ctx.stroke(h2, with: .color(color.opacity(0.8)), style: StrokeStyle(lineWidth: max(1, w*0.05), lineCap: .round))
         }
     }
 }

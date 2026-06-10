@@ -122,6 +122,142 @@ struct StoryBeatCard: View {
     }
 }
 
+// MARK: - Order chips (used in the queue card and at the counter)
+
+struct OrderChips: View {
+    let order: [OrderLine]
+    var glyphSize: CGFloat = 22
+    var compact: Bool = false
+
+    var body: some View {
+        HStack(spacing: compact ? 5 : 8) {
+            ForEach(order) { ol in
+                let line = Catalog.line(ol.lineId)
+                HStack(spacing: 3) {
+                    ProductGlyphView(glyph: line.glyph, size: glyphSize,
+                                     color: ol.isDone ? line.color.opacity(0.35) : line.color)
+                    Text("\(ol.filled)/\(ol.qty)")
+                        .font(.system(size: compact ? 10 : 13, weight: .heavy, design: .rounded))
+                        .foregroundColor(ol.isDone ? MarketTheme.neonGreen : MarketTheme.textHi)
+                }
+                .padding(.horizontal, compact ? 5 : 8)
+                .padding(.vertical, compact ? 3 : 6)
+                .background(Capsule().fill(MarketTheme.nightDeep))
+                .overlay(Capsule().stroke(ol.isDone ? MarketTheme.neonGreen.opacity(0.6)
+                                                     : MarketTheme.stroke.opacity(0.4), lineWidth: 1))
+            }
+        }
+    }
+}
+
+// MARK: - Counter (drop target for the front customer's order)
+
+struct CounterPanel: View {
+    @ObservedObject var store: MarketStore
+    var dragValid: Bool
+
+    var body: some View {
+        Group {
+            if let c = store.frontReadyCustomer() {
+                if c.quirk == .shoplifter {
+                    ShoplifterCounter(store: store)
+                } else {
+                    ActiveCounter(customer: c, dragValid: dragValid)
+                }
+            } else {
+                EmptyCounter(hasClerk: store.hasClerk)
+            }
+        }
+    }
+}
+
+struct ActiveCounter: View {
+    @ObservedObject var customer: MarketCustomer
+    var dragValid: Bool
+
+    var accent: Color {
+        if let rid = customer.regularId, let r = Regular.byId(rid) { return r.accent }
+        return customer.quirk.accent
+    }
+    var isRegular: Bool { customer.regularId != nil }
+
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
+                ZStack {
+                    Circle().fill(MarketTheme.nightDeep).frame(width: 44, height: 44)
+                    Circle().stroke(accent.opacity(0.8), lineWidth: 2).frame(width: 44, height: 44)
+                    if isRegular {
+                        RegularPortraitIcon(size: 30, color: accent)
+                    } else {
+                        PersonIcon(size: 26, color: accent)
+                    }
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(customer.displayName)
+                        .font(.system(size: 16, weight: .heavy, design: .rounded))
+                        .foregroundColor(accent)
+                    Text(dragValid ? "Release to hand it over" : "Drag the items here")
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                        .foregroundColor(MarketTheme.textMid)
+                }
+                Spacer()
+            }
+            OrderChips(order: customer.order, glyphSize: 26)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity)
+        .background(RoundedRectangle(cornerRadius: 18, style: .continuous)
+            .fill(dragValid ? MarketTheme.neonGreen.opacity(0.14) : MarketTheme.panelHi))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous)
+            .stroke(dragValid ? MarketTheme.neonGreen : accent.opacity(0.5),
+                    lineWidth: dragValid ? 2.5 : 1.5))
+    }
+}
+
+struct ShoplifterCounter: View {
+    @ObservedObject var store: MarketStore
+    var body: some View {
+        Button(action: { store.stopFrontShoplifter() }) {
+            HStack(spacing: 12) {
+                PersonIcon(size: 28, color: MarketTheme.textHi)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Stop Shoplifter!")
+                        .font(.system(size: 16, weight: .heavy, design: .rounded))
+                        .foregroundColor(MarketTheme.textHi)
+                    Text("Tap before they slip out with stock")
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                        .foregroundColor(MarketTheme.textHi.opacity(0.85))
+                }
+                Spacer()
+                CloseIcon(size: 22, color: MarketTheme.textHi)
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(MarketTheme.danger.opacity(0.85)))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct EmptyCounter: View {
+    let hasClerk: Bool
+    var body: some View {
+        HStack {
+            Text(hasClerk ? "Clerk is watching the counter…" : "No one at the counter")
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundColor(MarketTheme.textLow)
+            Spacer()
+            if hasClerk { PersonIcon(size: 20, color: MarketTheme.neonViolet) }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity)
+        .marketCard()
+    }
+}
+
 // MARK: - Achievements section (Ledger)
 
 struct AchievementsSection: View {

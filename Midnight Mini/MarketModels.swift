@@ -21,17 +21,22 @@ enum Catalog {
         ProductLine(id: 1, name: "Chips",      glyph: .snack,     color: MarketTheme.neonAmber,  basePrice: 8,  restockCost: 3,  unlockNight: 1),
         ProductLine(id: 2, name: "Coffee",     glyph: .coffee,    color: MarketTheme.neonViolet, basePrice: 12, restockCost: 4,  unlockNight: 1),
         ProductLine(id: 3, name: "Candy",      glyph: .candy,     color: MarketTheme.neonPink,   basePrice: 5,  restockCost: 2,  unlockNight: 2),
-        ProductLine(id: 4, name: "Sandwich",   glyph: .sandwich,  color: MarketTheme.neonGreen,  basePrice: 18, restockCost: 7,  unlockNight: 3),
-        ProductLine(id: 5, name: "Magazine",   glyph: .magazine,  color: MarketTheme.neonAmber,  basePrice: 15, restockCost: 5,  unlockNight: 4),
-        ProductLine(id: 6, name: "Ice Cream",  glyph: .iceCream,  color: MarketTheme.neonPink,   basePrice: 22, restockCost: 8,  unlockNight: 5),
-        ProductLine(id: 7, name: "Batteries",  glyph: .batteries, color: MarketTheme.neonCyan,   basePrice: 25, restockCost: 9,  unlockNight: 6),
-        ProductLine(id: 8, name: "Energy",     glyph: .energy,    color: MarketTheme.neonGreen,  basePrice: 30, restockCost: 11, unlockNight: 7),
-        ProductLine(id: 9, name: "Lotto",      glyph: .lottery,   color: MarketTheme.neonViolet, basePrice: 40, restockCost: 14, unlockNight: 8),
-        ProductLine(id: 10, name: "Hot Dog",    glyph: .hotDog,    color: MarketTheme.neonAmber,  basePrice: 16, restockCost: 6,  unlockNight: 9),
-        ProductLine(id: 11, name: "Slushie",    glyph: .slushie,   color: MarketTheme.neonCyan,   basePrice: 14, restockCost: 5,  unlockNight: 10),
-        ProductLine(id: 12, name: "Flowers",    glyph: .flowers,   color: MarketTheme.neonPink,   basePrice: 28, restockCost: 10, unlockNight: 11),
-        ProductLine(id: 13, name: "Charger",    glyph: .charger,   color: MarketTheme.neonGreen,  basePrice: 35, restockCost: 13, unlockNight: 12),
-        ProductLine(id: 14, name: "Plushie",    glyph: .plushie,   color: MarketTheme.neonViolet, basePrice: 45, restockCost: 16, unlockNight: 14)
+        ProductLine(id: 4, name: "Sandwich",   glyph: .sandwich,  color: MarketTheme.neonGreen,  basePrice: 18, restockCost: 7,  unlockNight: 2),
+        ProductLine(id: 5, name: "Magazine",   glyph: .magazine,  color: MarketTheme.neonAmber,  basePrice: 15, restockCost: 5,  unlockNight: 3),
+        ProductLine(id: 6, name: "Ice Cream",  glyph: .iceCream,  color: MarketTheme.neonPink,   basePrice: 22, restockCost: 8,  unlockNight: 3),
+        ProductLine(id: 7, name: "Batteries",  glyph: .batteries, color: MarketTheme.neonCyan,   basePrice: 25, restockCost: 9,  unlockNight: 4),
+        ProductLine(id: 8, name: "Energy",     glyph: .energy,    color: MarketTheme.neonGreen,  basePrice: 30, restockCost: 11, unlockNight: 4),
+        ProductLine(id: 9, name: "Lotto",      glyph: .lottery,   color: MarketTheme.neonViolet, basePrice: 40, restockCost: 14, unlockNight: 5),
+        ProductLine(id: 10, name: "Hot Dog",    glyph: .hotDog,    color: MarketTheme.neonAmber,  basePrice: 16, restockCost: 6,  unlockNight: 5),
+        ProductLine(id: 11, name: "Slushie",    glyph: .slushie,   color: MarketTheme.neonCyan,   basePrice: 14, restockCost: 5,  unlockNight: 6),
+        ProductLine(id: 12, name: "Flowers",    glyph: .flowers,   color: MarketTheme.neonPink,   basePrice: 28, restockCost: 10, unlockNight: 6),
+        ProductLine(id: 13, name: "Charger",    glyph: .charger,   color: MarketTheme.neonGreen,  basePrice: 35, restockCost: 13, unlockNight: 7),
+        ProductLine(id: 14, name: "Plushie",    glyph: .plushie,   color: MarketTheme.neonViolet, basePrice: 45, restockCost: 16, unlockNight: 7),
+        ProductLine(id: 15, name: "Water",      glyph: .water,     color: MarketTheme.neonCyan,   basePrice: 8,  restockCost: 3,  unlockNight: 8),
+        ProductLine(id: 16, name: "Donut",      glyph: .donut,     color: MarketTheme.neonAmber,  basePrice: 12, restockCost: 4,  unlockNight: 8),
+        ProductLine(id: 17, name: "Gum",        glyph: .gum,       color: MarketTheme.neonPink,   basePrice: 6,  restockCost: 2,  unlockNight: 9),
+        ProductLine(id: 18, name: "Newspaper",  glyph: .newspaper, color: MarketTheme.neonViolet, basePrice: 10, restockCost: 3,  unlockNight: 9),
+        ProductLine(id: 19, name: "Umbrella",   glyph: .umbrella,  color: MarketTheme.neonGreen,  basePrice: 26, restockCost: 9,  unlockNight: 10)
     ]
 
     static func line(_ id: Int) -> ProductLine {
@@ -128,23 +133,33 @@ enum CustomerQuirk: String, CaseIterable {
     }
 }
 
+// MARK: - Order (one line of a customer's shopping order)
+
+struct OrderLine: Identifiable {
+    let id = UUID()
+    let lineId: Int
+    let qty: Int
+    var filled: Int = 0
+
+    var isDone: Bool { filled >= qty }
+    var remaining: Int { max(0, qty - filled) }
+}
+
 // MARK: - Customer (in-shift runtime model)
 
 final class MarketCustomer: Identifiable, ObservableObject {
     let id = UUID()
     let quirk: CustomerQuirk
-    let wantLineId: Int
-    let quantity: Int
     let patienceMax: Double      // seconds of patience
     let regularId: String?       // set when this customer is a named regular
+    @Published var order: [OrderLine]   // the products this customer wants
     @Published var patience: Double
     @Published var ready: Bool   // browser becomes ready after a short delay
     var browseDelay: Double      // remaining delay before the order is revealed
 
-    init(quirk: CustomerQuirk, wantLineId: Int, quantity: Int, patienceMax: Double, browseDelay: Double, regularId: String? = nil) {
+    init(quirk: CustomerQuirk, order: [OrderLine], patienceMax: Double, browseDelay: Double, regularId: String? = nil) {
         self.quirk = quirk
-        self.wantLineId = wantLineId
-        self.quantity = quantity
+        self.order = order
         self.patienceMax = patienceMax
         self.regularId = regularId
         self.patience = patienceMax
@@ -156,6 +171,30 @@ final class MarketCustomer: Identifiable, ObservableObject {
     var displayName: String {
         if let rid = regularId, let r = Regular.byId(rid) { return r.name }
         return quirk.title
+    }
+
+    // The whole order is fulfilled (a shoplifter has an empty order, but is never
+    // resolved through this path).
+    var isComplete: Bool { !order.isEmpty && order.allSatisfy { $0.isDone } }
+
+    var totalUnits: Int { order.reduce(0) { $0 + $1.qty } }
+
+    // A representative line id for tinting/fallback display.
+    var primaryLineId: Int { order.first?.lineId ?? 0 }
+
+    // How many more units of a given line this customer still needs.
+    func remaining(_ lineId: Int) -> Int {
+        order.filter { $0.lineId == lineId }.reduce(0) { $0 + $1.remaining }
+    }
+
+    // Fill one unit of the first unfinished line matching this product.
+    @discardableResult
+    func fill(_ lineId: Int) -> Bool {
+        if let idx = order.firstIndex(where: { $0.lineId == lineId && !$0.isDone }) {
+            order[idx].filled += 1
+            return true
+        }
+        return false
     }
 
     var patienceFraction: Double {
